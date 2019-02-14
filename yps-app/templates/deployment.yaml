@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "yps-app.fullname" . }}
+  #namespace: '{{ .Release.Name }}-scl-namespace'
+  labels:
+    app.kubernetes.io/name: {{ include "yps-app.name" . }}
+    helm.sh/chart: {{ include "yps-app.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "yps-app.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "yps-app.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env: 
+        - name: YPS_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: '{{ .Release.Name }}-secret'
+              key: yps_username
+        - name: YPS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+               name: '{{ .Release.Name }}-secret'
+               key: yps_password
+        - name: YPS_DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: '{{ .Release.Name }}-configmap'
+              key: YPS_DB_URL
+        - name: DB_CONNECTION_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: '{{ .Release.Name }}-configmap'
+              key: DB_CONNECTION_TIMEOUT
+        - name: DB_VALIDATION_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: '{{ .Release.Name }}-configmap'
+              key: DB_VALIDATION_TIMEOUT
+        - name: DB_VALIDATION_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: '{{ .Release.Name }}-configmap'
+              key: DB_VALIDATION_TIMEOUT
+        - name: DB_IDLE_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: '{{ .Release.Name }}-configmap'
+              key: DB_IDLE_TIMEOUT
+        - name: DB_LEAK_DETECTION_THRESHOLD
+          valueFrom:
+            configMapKeyRef:
+              name: '{{ .Release.Name }}-configmap'
+              key: DB_LEAK_DETECTION_THRESHOLD
+        - name: DB_MAX_LIFETIME
+          valueFrom:
+            configMapKeyRef:
+              name: '{{ .Release.Name }}-configmap'
+              key: DB_MAX_LIFETIME
+        - name: DB_MAX_POOL_SIZE
+          valueFrom:
+            configMapKeyRef:
+              name: '{{ .Release.Name }}-configmap'
+              key: DB_MAX_POOL_SIZE
+        - name: DB_MIN_IDLE_TIMEOU
+          valueFrom:
+            configMapKeyRef:
+              name: '{{ .Release.Name }}-configmap'
+              key: DB_MIN_IDLE_TIMEOUT
+        - name: IsMultiTenant
+          value: '1'
+          ports:
+          - containerPort: 8080
+            name: web

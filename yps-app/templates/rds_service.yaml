@@ -1,0 +1,11 @@
+kind: Service
+metadata:
+  name: ypsdb	
+  #  namespace: '{{ .Release.Name }}-scl-namespace'
+spec:	
+  hosts:
+  - "{{ .Values.database.host }}"	  
+  ports:	  
+  - number: 3306
+    name: mysql
+    protocol: TCP

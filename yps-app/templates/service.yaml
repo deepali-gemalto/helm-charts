@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: '{{ .Values.app_name }}'
+  name: '{{ .Values.app_name }}'
+  #  namespace: '{{ .Release.Name }}-scl-namespace'
+spec:
+  ports:
+    - name: '{{ .Values.app_name }}'
+      port: 8080
+      protocol: TCP
+      targetPort: web
+  selector:
+    app: '{{ .Values.app_name }}'
